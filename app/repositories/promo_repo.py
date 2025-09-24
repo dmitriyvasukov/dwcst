@@ -42,9 +42,7 @@ class PromoCodeRepository:
 
     @staticmethod
     def apply_promo_code(db: Session, promo_name: str, cart):
-        promo = db.query(PromoCode).options(
-            joinedload(PromoCode.applicable_products)
-        ).filter(PromoCode.name == promo_name).first()
+        promo = db.query(PromoCode).filter(PromoCode.name == promo_name).first()
         
         if not promo or not promo.is_active:
             return None, "Invalid or inactive promo code"
@@ -53,10 +51,16 @@ class PromoCodeRepository:
             return None, "Promo code usage limit exceeded"
         
         if not promo.applies_to_all:
+            # Получаем ID продуктов в корзине
             cart_product_ids = [item.product_id for item in cart.items]
-            applicable_product_ids = [product.id for product in promo.applicable_products]
             
-            if not any(pid in applicable_product_ids for pid in cart_product_ids):
+            # Проверяем в базе данных, есть ли связь между промокодом и продуктами в корзине
+            applicable_count = db.query(PromoApplicableProduct).filter(
+                PromoApplicableProduct.promo_id == promo.id,
+                PromoApplicableProduct.product_id.in_(cart_product_ids)
+            ).count()
+            
+            if applicable_count == 0:
                 return None, "Promo code not applicable to any product in cart"
         
         promo.usage_count += 1
