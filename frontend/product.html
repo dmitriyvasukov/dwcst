@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DWC</title>
+    <link rel="stylesheet" href="styles/style.css">
+</head>
+<body>
+    <header>
+        <div class="menu-button"><img src="static/front/menu-button.png"></div>
+        <div class="logo-text">воплощая искусство в фамильяра</div>
+        <div class="right-buttons">
+        <div class="user-button"><img src="static/front/people.png" height="30px"></div>
+        <div class="admin-button" style="display: none;"><button>Админ панель</button></div>
+        <div class="cart-button"><img src="static/front/cart.png" height="30px"></div>
+        </div>
+    </header>
+    
+    <main>
+        <div class="product-pictures-slider"><img src="static/front/pictures-slider-example.png" width="100%"></div> <!--пока заглушка ввиде картинки, будет слайдер который можно листать зажав кнопку мыши и потянув влево/вправо-->
+        <div class="product-info">
+            <div class="main-info">
+                <div class="product-meta">
+                    <div class="product-title">ПУЗЫРЕК СЧАСТЬЯ</div>
+                    <div class="price">Цена товара: 12000</div>
+                    <div class="status">Тип заказа: В наличии</div>
+                    <div class="Sizes">Oki | Big</div> <!--можно будет выбрать размер нажав на одну из опций-->
+                    <button class="add-to-cart-button">В КОРЗИНУ</button>
+                </div>
+                <div class="stock-counter">
+                    Осталось:<br>
+                    Oki - 14 шт.
+                    Big - 88 шт.
+                </div>
+            </div>
+            
+
+            <div class="description-info">
+                <div class="description">Описание изделия</div> <!--раскрывающийся элемент, выдвигается сверху вниз при нажатии-->
+                <div class="care-info">Информация об уходе</div> <!--раскрывающийся элемент, выдвигается сверху вниз при нажатии-->
+                <div class="size-table">Размерная сетка</div> <!--раскрывающийся элемент, выдвигается сверху вниз при нажатии-->
+            </div>
+        </div>
+    </main>
+
+
+    <footer>
+        <div class="logo"><img src="#"></div>
+        <div class="ext-info">
+            <a>О проекте</a>
+            <a>Частые вопросы</a>
+        </div>
+        <div class="law-info">
+            <p>Самозанятый: Георгий Е./1488-228-282</p>
+            <a>Договор оферты</a>
+            <a>Политика конфиденциальности</a>
+        </div>
+    </footer>
+    
+    <!-- Scripts -->
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/products.js"></script>
+</body>

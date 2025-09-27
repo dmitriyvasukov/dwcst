@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Auth</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .status { margin: 10px 0; padding: 10px; border-radius: 4px; }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        .info { background-color: #d1ecf1; color: #0c5460; }
+        button { padding: 10px 20px; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Тест авторизации</h1>
+    
+    <div id="status" class="status info">Загрузка...</div>
+    
+    <div>
+        <button onclick="testLogin()">Тест входа</button>
+        <button onclick="testLogout()">Выйти</button>
+        <button onclick="testReload()">Перезагрузить страницу</button>
+        <button onclick="checkAuth()">Проверить статус</button>
+    </div>
+    
+    <div id="info"></div>
+    
+    <script src="frontend/js/api.js"></script>
+    <script>
+        async function updateStatus() {
+            const statusEl = document.getElementById('status');
+            const infoEl = document.getElementById('info');
+            
+            await authManager.init();
+            
+            if (authManager.currentUser) {
+                statusEl.textContent = `Авторизован как: ${authManager.currentUser.email} (${authManager.isAdmin ? 'Админ' : 'Пользователь'})`;
+                statusEl.className = 'status success';
+            } else {
+                statusEl.textContent = 'Не авторизован';
+                statusEl.className = 'status error';
+            }
+            
+            infoEl.innerHTML = `
+                <h3>Информация о токене:</h3>
+                <p>Токен в localStorage: ${localStorage.getItem('access_token') ? 'Есть' : 'Нет'}</p>
+                <p>Текущий пользователь: ${authManager.currentUser ? authManager.currentUser.email : 'Нет'}</p>
+                <p>Роль админа: ${authManager.isAdmin ? 'Да' : 'Нет'}</p>
+            `;
+        }
+        
+        async function testLogin() {
+            const email = prompt('Введите email:');
+            const password = prompt('Введите пароль:');
+            
+            if (email && password) {
+                try {
+                    await api.login(email, password);
+                    await updateStatus();
+                } catch (error) {
+                    alert('Ошибка входа: ' + error.message);
+                }
+            }
+        }
+        
+        function testLogout() {
+            authManager.clearAuth();
+            updateStatus();
+        }
+        
+        function testReload() {
+            location.reload();
+        }
+        
+        function checkAuth() {
+            updateStatus();
+        }
+        
+        // Инициализация при загрузке
+        document.addEventListener('DOMContentLoaded', updateStatus);
+    </script>
+</body>
+</html>

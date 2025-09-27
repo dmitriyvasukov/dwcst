@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ панель - DWC</title>
+    <link rel="stylesheet" href="styles/style.css">
+    <link rel="stylesheet" href="styles/admin.css">
+</head>
+<body>
+    <header>
+        <div class="menu-button"><img src="static/front/menu-button.png"></div>
+        <div class="logo-text">Админ панель</div>
+        <div class="right-buttons">
+            <div class="user-button"><img src="static/front/people.png" height="30px"></div>
+            <div class="logout-button"><button>Выйти</button></div>
+        </div>
+    </header>
+    
+    <main class="admin-main">
+        <div class="admin-sidebar">
+            <nav class="admin-nav">
+                <button class="nav-button active" data-section="products">Товары</button>
+                <button class="nav-button" data-section="promos">Промокоды</button>
+                <button class="nav-button" data-section="orders">Заказы</button>
+                <button class="nav-button" data-section="users">Пользователи</button>
+            </nav>
+        </div>
+        
+        <div class="admin-content">
+            <!-- Products Section -->
+            <div id="products-section" class="admin-section active">
+                <div class="section-header">
+                    <h2>Управление товарами</h2>
+                    <button class="add-button" id="add-product-btn">Добавить товар</button>
+                </div>
+                <div class="table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Название</th>
+                                <th>Цена</th>
+                                <th>Статус</th>
+                                <th>Остаток</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="products-table-body">
+                            <!-- Products will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Promos Section -->
+            <div id="promos-section" class="admin-section">
+                <div class="section-header">
+                    <h2>Управление промокодами</h2>
+                    <button class="add-button" id="add-promo-btn">Добавить промокод</button>
+                </div>
+                <div class="table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Код</th>
+                                <th>Скидка</th>
+                                <th>Тип</th>
+                                <th>Активен</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="promos-table-body">
+                            <!-- Promos will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Orders Section -->
+            <div id="orders-section" class="admin-section">
+                <div class="section-header">
+                    <h2>Управление заказами</h2>
+                </div>
+                <div class="table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Пользователь</th>
+                                <th>Статус</th>
+                                <th>Сумма</th>
+                                <th>Дата</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orders-table-body">
+                            <!-- Orders will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Users Section -->
+            <div id="users-section" class="admin-section">
+                <div class="section-header">
+                    <h2>Управление пользователями</h2>
+                </div>
+                <div class="table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Email</th>
+                                <th>Имя</th>
+                                <th>Роль</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-table-body">
+                            <!-- Users will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Product Modal -->
+    <div id="product-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="product-modal-title">Добавить товар</h2>
+            <form id="product-form">
+                <div class="form-group">
+                    <label for="product-name">Название:</label>
+                    <input type="text" id="product-name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="product-description">Описание:</label>
+                    <textarea id="product-description" name="description"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="product-care">Уход:</label>
+                    <textarea id="product-care" name="care"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="product-price">Цена:</label>
+                    <input type="number" id="product-price" name="price" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="product-status">Статус:</label>
+                    <select id="product-status" name="status">
+                        <option value="in_stock">В наличии</option>
+                        <option value="preorder">Предзаказ</option>
+                        <option value="waiting">Ожидание</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="product-stock">Остаток:</label>
+                    <input type="number" id="product-stock" name="stock" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="product-preview">Превью:</label>
+                    <div class="file-upload-container">
+                        <input type="file" id="product-preview-file" accept="image/*" style="display: none;">
+                        <button type="button" id="upload-preview-btn" class="upload-btn">Выбрать файл</button>
+                        <span id="preview-filename" class="filename-display"></span>
+                        <input type="hidden" id="product-preview" name="preview">
+                    </div>
+                    <div id="preview-image-container" class="image-preview"></div>
+                </div>
+                <div class="form-group">
+                    <label for="product-images">Дополнительные изображения:</label>
+                    <div class="file-upload-container">
+                        <input type="file" id="product-images-files" accept="image/*" multiple style="display: none;">
+                        <button type="button" id="upload-images-btn" class="upload-btn">Выбрать файлы</button>
+                        <span id="images-filename" class="filename-display"></span>
+                        <input type="hidden" id="product-images" name="images">
+                    </div>
+                    <div id="images-preview-container" class="images-preview"></div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="save-button">Сохранить</button>
+                    <button type="button" class="cancel-button">Отмена</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Promo Modal -->
+    <div id="promo-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="promo-modal-title">Добавить промокод</h2>
+            <form id="promo-form">
+                <div class="form-group">
+                    <label for="promo-code">Код:</label>
+                    <input type="text" id="promo-code" name="code" required>
+                </div>
+                <div class="form-group">
+                    <label for="promo-discount">Скидка:</label>
+                    <input type="number" id="promo-discount" name="discount" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="promo-type">Тип:</label>
+                    <select id="promo-type" name="type">
+                        <option value="percentage">Процент</option>
+                        <option value="fixed">Фиксированная сумма</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="promo-is-active">Активен:</label>
+                    <input type="checkbox" id="promo-is-active" name="is_active" checked>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="save-button">Сохранить</button>
+                    <button type="button" class="cancel-button">Отмена</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test File Upload</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .upload-container { margin: 20px 0; padding: 20px; border: 1px solid #ddd; border-radius: 4px; }
+        .preview { margin-top: 10px; }
+        .preview img { max-width: 200px; max-height: 200px; border-radius: 4px; }
+        button { padding: 10px 20px; margin: 5px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+        .status { margin: 10px 0; padding: 10px; border-radius: 4px; }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <h1>Тест загрузки файлов</h1>
+    
+    <div class="upload-container">
+        <h3>Загрузка одного изображения</h3>
+        <input type="file" id="single-file" accept="image/*">
+        <button onclick="uploadSingle()">Загрузить</button>
+        <div id="single-status" class="status" style="display: none;"></div>
+        <div id="single-preview" class="preview"></div>
+    </div>
+    
+    <div class="upload-container">
+        <h3>Загрузка нескольких изображений</h3>
+        <input type="file" id="multiple-files" accept="image/*" multiple>
+        <button onclick="uploadMultiple()">Загрузить все</button>
+        <div id="multiple-status" class="status" style="display: none;"></div>
+        <div id="multiple-preview" class="preview"></div>
+    </div>
+    
+    <div>
+        <button onclick="testLogin()">Войти как админ</button>
+        <button onclick="checkAuth()">Проверить авторизацию</button>
+    </div>
+    
+    <script src="frontend/js/api.js"></script>
+    <script>
+        async function uploadSingle() {
+            const fileInput = document.getElementById('single-file');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                showStatus('single-status', 'Выберите файл', 'error');
+                return;
+            }
+            
+            try {
+                showStatus('single-status', 'Загрузка...', 'success');
+                const result = await api.uploadImage(file);
+                
+                showStatus('single-status', `Файл загружен: ${result.filename}`, 'success');
+                
+                // Show preview
+                document.getElementById('single-preview').innerHTML = `
+                    <img src="${api.getFileUrl(result.filename)}" alt="Preview">
+                    <p>URL: ${result.url}</p>
+                `;
+            } catch (error) {
+                showStatus('single-status', 'Ошибка: ' + error.message, 'error');
+            }
+        }
+        
+        async function uploadMultiple() {
+            const fileInput = document.getElementById('multiple-files');
+            const files = Array.from(fileInput.files);
+            
+            if (files.length === 0) {
+                showStatus('multiple-status', 'Выберите файлы', 'error');
+                return;
+            }
+            
+            try {
+                showStatus('multiple-status', `Загрузка ${files.length} файлов...`, 'success');
+                
+                const uploadPromises = files.map(file => api.uploadImage(file));
+                const results = await Promise.all(uploadPromises);
+                
+                showStatus('multiple-status', `Загружено ${results.length} файлов`, 'success');
+                
+                // Show previews
+                document.getElementById('multiple-preview').innerHTML = results.map((result, index) => `
+                    <div style="display: inline-block; margin: 5px;">
+                        <img src="${api.getFileUrl(result.filename)}" alt="Image ${index + 1}">
+                        <p>${result.original_name}</p>
+                    </div>
+                `).join('');
+            } catch (error) {
+                showStatus('multiple-status', 'Ошибка: ' + error.message, 'error');
+            }
+        }
+        
+        async function testLogin() {
+            const email = prompt('Введите email админа:');
+            const password = prompt('Введите пароль:');
+            
+            if (email && password) {
+                try {
+                    await api.login(email, password);
+                    alert('Вход выполнен успешно!');
+                } catch (error) {
+                    alert('Ошибка входа: ' + error.message);
+                }
+            }
+        }
+        
+        function checkAuth() {
+            const token = localStorage.getItem('access_token');
+            alert(token ? 'Авторизован' : 'Не авторизован');
+        }
+        
+        function showStatus(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = `status ${type}`;
+            element.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
+
